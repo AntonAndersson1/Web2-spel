@@ -1,109 +1,86 @@
-/* General Reset */
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    color: #fcfafa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+let activePlayer = 1;
+let scores = [0, 0];
+let currentScore = 0; 
+
+
+
+const player1ScoreElem = document.getElementById("score-1");
+const player2ScoreElem = document.getElementById("score-2");
+const player1CurrentElem = document.getElementById("current-1");
+const player2CurrentElem = document.getElementById("current-2");
+const diceElem = document.getElementById("dice");
+const rollButton = document.getElementById("roll-dice");
+const holdButton = document.getElementById("hold");
+const resetButton = document.getElementById("reset");
+const player1Section = document.getElementById("player-1");
+const player2Section = document.getElementById("player-2");
+
+
+function rollDice() {
+    const diceRoll = Math.floor(Math.random() * 6) + 1; 
+    showDiceImage(diceRoll);
+    if (diceRoll === 1) {
+        
+        currentScore = 0;
+        updateCurrentScore();
+        switchPlayer();
+    } else {
+        
+        currentScore += diceRoll;
+        updateCurrentScore();
+    }
 }
 
-.game-container {
-    width: 90%;
-    max-width: 800px;
-    background: #250c0c;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    overflow: hidden;
+function showDiceImage(diceRoll) {
+
+    const allDiceImages = document.querySelectorAll(`.bild, .bildd`);
+    allDiceImages.forEach(img => img.style.opacity = "0"); 
+
+    if (activePlayer === 1) {
+        document.querySelector(`.bild[src="taerning${diceRoll}.jpg"]`).style.opacity = "1";
+    } else {
+        document.querySelector(`.bildd[src="taerning${diceRoll}.jpg"]`).style.opacity = "1";
+    }
 }
 
-header {
-    background-color: #f39508;
-    color: white;
-    text-align: center;
-    padding: 1rem;
+
+function updateCurrentScore() {
+    if (activePlayer === 1) {
+        player1CurrentElem.textContent = `Current: ${currentScore}`;
+    } else {
+        player2CurrentElem.textContent = `Current: ${currentScore}`;
+    }
 }
 
-main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1.5rem;
+
+function holdScore() {
+    scores[activePlayer - 1] += currentScore; 
+    currentScore = 0; 
+    updateScores();
+    if (scores[activePlayer - 1] >= winningScore) {
+        endGame();
+    } else {
+        switchPlayer();
+    }
 }
 
-.player {
-    margin: 1rem;
-    text-align: center;
-    padding: 1rem;
-    border: 2px solid #ddd;
-    border-radius: 5px;
-    width: 100%;
+
+function updateScores() {
+    player1ScoreElem.textContent = scores[0];
+    player2ScoreElem.textContent = scores[1];
 }
 
-.player.active {
-    border-color: #f39508;
+function switchPlayer() {
+    activePlayer = activePlayer === 1 ? 2 : 1;
+    player1Section.classList.toggle("active");
+    player2Section.classList.toggle("active");
 }
 
-.score {
-    font-size: 2rem;
-    margin: 0.5rem 0;
-    color: #f39508;
-}
 
-.controls {
-    margin-top: 1.5rem;
-    text-align: center;
-}
 
-button {
-    background-color: #f39508;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 0.5rem;
-}
 
-button:hover {
-    background-color: #f39508;
-}
+rollButton.addEventListener("click", rollDice);
+holdButton.addEventListener("click", holdScore);
 
-.dice {
-    margin-top: 1rem;
-    width: 50px;
-    height: 50px;
-    background-color: #f39508;
-    color: white;
-    font-size: 1.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    visibility: hidden;
-}
-.bild {
-opacity: 1;
-position: relative;  
-    width: 300px; 
-    height: 300px;
-    position: absolute;  
-    top: 120px;  
-    right: 450px;  
-    width: 100px;
-    height: 100px;
-}
-.bildd{
-    opacity: 1;
-    position: relative;  
-    width: 300px; 
-    height: 300px;
-    position: absolute;  
-    bottom: 140px;  
-    right: 450px;  
-    width: 100px;
-    height: 100px;
-}
+
+
