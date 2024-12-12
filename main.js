@@ -3,7 +3,7 @@ let scores = [0, 0];
 let currentScore = 0; 
 
 
-
+//Detta är alla variabler vi har hämtat från html
 const player1ScoreElem = document.getElementById("score-1");
 const player2ScoreElem = document.getElementById("score-2");
 const player1CurrentElem = document.getElementById("current-1");
@@ -14,9 +14,11 @@ const holdButton = document.getElementById("hold");
 const resetButton = document.getElementById("reset");
 const player1Section = document.getElementById("player-1");
 const player2Section = document.getElementById("player-2");
+const winningScore = 50;
 
 
 function rollDice() {
+    if (scores[0] >= winningScore || scores[1] >= winningScore) return;
     const diceRoll = Math.floor(Math.random() * 6) + 1; 
     showDiceImage(diceRoll);
     if (diceRoll === 1) {
@@ -57,6 +59,7 @@ function holdScore() {
     scores[activePlayer - 1] += currentScore; 
     currentScore = 0; 
     updateScores();
+    
     if (scores[activePlayer - 1] >= winningScore) {
         endGame();
     } else {
@@ -76,11 +79,31 @@ function switchPlayer() {
     player2Section.classList.toggle("active");
 }
 
-
+resetButton.addEventListener("click", () => {
+    scores = [0, 0];
+    currentScore = 0;
+    activePlayer = 1;
+    player1ScoreElem.textContent = 0;
+    player2ScoreElem.textContent = 0;
+    player1CurrentElem.textContent = 'Current: 0';
+    player2CurrentElem.textContent = 'Current: 0';
+    player1Section.classList.add("active");
+    player2Section.classList.remove("active");
+    rollButton.disabled = false;
+    holdButton.disabled = false;
+});
 
 
 rollButton.addEventListener("click", rollDice);
 holdButton.addEventListener("click", holdScore);
 
 
-
+function endGame() {
+    if (scores[0] >= winningScore) {
+      alert("Player 1 won!");
+    } else if (scores[1] >= winningScore) {
+      alert("Player 2 won!");
+    }
+    rollButton.disabled = true;
+    holdButton.disabled = true;
+};
